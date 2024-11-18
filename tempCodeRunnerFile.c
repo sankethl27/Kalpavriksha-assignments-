@@ -1,2 +1,0 @@
-
-        if(!fgets(inputString,sizeo
