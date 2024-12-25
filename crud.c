@@ -23,12 +23,12 @@ bool IsValidAge(int Age)
 
 int StringLength(const char *str)
 {
-    int length = 0;
-    while (str[length] != '\0')
+    int Length = 0;
+    while (str[Length] != '\0')
     {
-        length++;
+        Length++;
     }
-    return length;
+    return Length;
 }
 
 int ReadUser(const char *BufferString, User *User)
@@ -129,106 +129,100 @@ void GetName(char *Name, int MaxLength)
     }
 }
 
-void Create()
+void CreateUser()
 {
     FILE *WriteFilePointer = fopen("users.txt", "a");
     User User;
+    User.Id = GetId();
     if (!WriteFilePointer)
     {
         perror("Error writing to file");
-        return;
-    }
-    User.Id = GetId();
-    if (UserPresent(User.Id))
+    }   
+    else if (UserPresent(User.Id))
     {
         printf("----User ID already exists----\n");
         fclose(WriteFilePointer);
-        return;
     }
-    GetName(User.Name, sizeof(User.Name));
-    User.Age = GetAge();
-    WriteUser(WriteFilePointer, &User);
-    printf("\n----Data entered successfully-----\n");
-    fclose(WriteFilePointer);
+    else
+    {
+        GetName(User.Name, sizeof(User.Name));
+        User.Age = GetAge();
+        WriteUser(WriteFilePointer, &User);
+        printf("\n----Data entered successfully-----\n");
+    }
+    fclose(WriteFilePointer);  
 }
 
-void Read()
+void ReadUsers()
 {
     FILE *ReadFilePointer = fopen("users.txt", "r");
     char BufferString[100];
     if (ReadFilePointer == NULL)
     {
         perror("----Error opening file----");
-        exit(EXIT_FAILURE);
     }
-    while (fgets(BufferString, sizeof(BufferString), ReadFilePointer))
+    else
     {
-        printf("%s", BufferString);
-    }
-    fclose(ReadFilePointer);
+        while (fgets(BufferString, sizeof(BufferString), ReadFilePointer))
+        {
+            printf("%s", BufferString);
+        }
+        fclose(ReadFilePointer);
+    } 
 }
 
-void Update()
+void UpdateUser()
 {
     FILE *ReadFilePointer = fopen("users.txt", "r");
     FILE *TempFilePointer = fopen("temp.txt", "w");
     User User;
-    int TargetId;
-    char BufferString[100];
+    int TargetId = GetId();;
+    char BufferString[100]; 
     if (!TempFilePointer || !ReadFilePointer)
-    {
+    {   
         printf("Error opening file");
-        fclose(TempFilePointer);
-        fclose(ReadFilePointer);
-        return;
-    }
-    TargetId = GetId();
-    if (UserPresent(TargetId))
+    }   
+    else if (UserPresent(TargetId))
     {
         while (fgets(BufferString, sizeof(BufferString), ReadFilePointer))
         {
             if (ReadUser(BufferString, &User) == 3)
             {
                 if (User.Id == TargetId)
-                {
+                {   
                     GetName(User.Name, sizeof(User.Name));
                     User.Age = GetAge();
                 }
                 WriteUser(TempFilePointer, &User);
             }
         }
+        printf(" ----User updated successfully----\n");
+        fclose(TempFilePointer);
+        fclose(ReadFilePointer); 
+        remove("users.txt");
+        rename("temp.txt", "users.txt");   
     }
     else
-    {
+    {   
         printf("User not found\n");
         fclose(TempFilePointer);
         fclose(ReadFilePointer);
-        remove("temp.txt");
-        return;
-    }
-
-    fclose(TempFilePointer);
-    fclose(ReadFilePointer);
-    remove("users.txt");
-    rename("temp.txt", "users.txt");
-    printf(" ----User updated successfully----\n");
+        remove("temp.txt"); 
+    }  
 }
 
-void Delete()
+void DeleteUser()
 {
     FILE *ReadFilePointer = fopen("users.txt", "r");
     FILE *TempFilePointer = fopen("temp.txt", "w");
     User User;
-    int TargetId;
+    int TargetId = GetId();
     char BufferString[100];
-
     if (!TempFilePointer || !ReadFilePointer)
     {
         printf("----Error opening file----");
-        return;
     }
-    TargetId = GetId();
-    if (UserPresent(TargetId))
+    else if (UserPresent(TargetId))
     {
         while (fgets(BufferString, 100, ReadFilePointer))
         {
@@ -240,20 +234,19 @@ void Delete()
                 }
             }
         }
-    }
-    else
-    {
-        printf("----User ID not present, Please Enter a valid ID\n----");
         fclose(ReadFilePointer);
         fclose(TempFilePointer);
-        remove("temp.txt");
-        return;
+        remove("users.txt");
+        rename("temp.txt", "users.txt");
+        printf("----User Deleted Successfully----\n");
     }
-    fclose(ReadFilePointer);
-    fclose(TempFilePointer);
-    remove("users.txt");
-    rename("temp.txt", "users.txt");
-    printf("----User Deleted Successfully----\n");
+    else
+    {   
+        fclose(ReadFilePointer);
+        fclose(TempFilePointer);
+        printf("----User ID not present, Please Enter a valid ID----\n");    
+        remove("temp.txt");
+    }   
 }
 
 int main()
@@ -263,32 +256,30 @@ int main()
     while (1)
     {
         printf("\nEnter the operation you want to perform\n");
-        printf("1. Create\n");
-        printf("2. Read\n");
-        printf("3. Update\n");
-        printf("4. Delete\n");
+        printf("1. CreateUser\n");
+        printf("2. ReadUsers\n");
+        printf("3. UpdateUser\n");
+        printf("4. DeleteUser\n");
         printf("5. Exit\n");
         fgets(Input, sizeof(Input), stdin);
-
         if (sscanf(Input, "%d", &Operation) != 1)
         {
             printf("Invalid input. Please enter a number between 1 and 5.\n");
             continue;
         }
-
         switch (Operation)
         {
         case 1:
-            Create();
+            CreateUser();
             break;
         case 2:
-            Read();
+            ReadUsers();
             break;
         case 3:
-            Update();
+            UpdateUser();
             break;
         case 4:
-            Delete();
+            DeleteUser();
             break;
         case 5:
             printf("-------------EXITING-------------\n");
@@ -297,6 +288,5 @@ int main()
             printf("Enter a valid operation\n");
         }
     }
-
     return 0;
 }
