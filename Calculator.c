@@ -30,18 +30,23 @@ int IsDigit(char Character)
     return Character >= '0' && Character <= '9';
 }
 
-int StringCompare(const char *str1, const char *str2)
+int StringCompare(const char *String1, const char *String2)
 {
-    while (*str1 != '\0' && *str2 != '\0')
+    int ComparisonResult = 0;
+    while (*String1 != '\0' && *String2 != '\0')
     {
-        if (*str1 != *str2)
+        if (*String1 != *String2)
         {
-            return (unsigned char)(*str1) - (unsigned char)(*str2);
+            ComparisonResult =  (unsigned char)(*String1) - (unsigned char)(*String2);
         }
-        str1++;
-        str2++;
+        String1++;
+        String2++;
     }
-    return (unsigned char)(*str1) - (unsigned char)(*str2);
+    if(ComparisonResult == 0)
+    {
+        ComparisonResult = (unsigned char)(*String1) - (unsigned char)(*String2);
+    }
+    return ComparisonResult;
 }
 
 int StringLength(const char *String)
@@ -78,19 +83,15 @@ int PerformOperation(int OperandA, int OperandB, char Operator)
         }   
         Result = OperandA / OperandB;
         break;  
-
     case '*':
         Result = OperandA * OperandB;
         break;
-
     case '+':
         Result = OperandA + OperandB;
         break;
-
     case '-':
         Result = OperandA - OperandB;
         break;
-
     default:
         printf("Error: Invalid operator.\n");
         Error = 1;
@@ -103,10 +104,12 @@ int Calculate(char *Expression)
     char Operators[MaxLen];
     int ValuesStack[MaxLen];
     int ValuesTop = -1, OperatorsTop = -1;
-
     for (int Index = 0; Expression[Index] != '\0'; Index++)
     {   
-        if (Error) break;
+        if (Error)
+        {
+            break;
+        }
         if (IsDigit(Expression[Index]))
         {
             int Value = 0;
@@ -142,7 +145,6 @@ int Calculate(char *Expression)
                     printf("Error: Invalid expression.\n");
                     Error = 1;
                 }
-
                 int OperandB = ValuesStack[ValuesTop--];
                 int OperandA = ValuesStack[ValuesTop--];
                 char Operator = Operators[OperatorsTop--];
@@ -154,13 +156,14 @@ int Calculate(char *Expression)
         {   
             Error = 1;
             printf("Invalid Expression.\n");
-        }
-
-        
+        }   
     }
     while (OperatorsTop >= 0)
     {   
-        if (Error) break;
+        if (Error) 
+        {
+            break;
+        }
         if (ValuesTop < 1)
         {
             printf("Error: Invalid expression.\n");
@@ -172,7 +175,6 @@ int Calculate(char *Expression)
             printf("Error: Mismatched parentheses.\n");
             Error = 1;
         }   
-
         int OperandB = ValuesStack[ValuesTop--];
         int OperandA = ValuesStack[ValuesTop--];
         char Operator = Operators[OperatorsTop--];
@@ -194,26 +196,22 @@ void main()
             continue;
         }
         InputString[StringLength(InputString) - 1] = '\0';  // Remove newline
-
         if (StringLength(InputString) == 0)
         {
             printf("Please enter a valid expression.\n");
             continue;
         }
-
         if (StringCompare(InputString, "exit") == 0) 
         {
             printf("Exiting...\n");
             break;
         }
-
         RemoveWhiteSpaces(InputString);
         int Result = Calculate(InputString);
         if (!Error)  
         {
             printf("The result of '%s' is: %d\n", InputString, Result);
-        }
-      
+        }    
         printf("\n");
     }
 }
