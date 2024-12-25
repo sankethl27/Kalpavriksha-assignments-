@@ -269,23 +269,23 @@ int main()
         }
         switch (Operation)
         {
-        case 1:
-            CreateUser();
-            break;
-        case 2:
-            ReadUsers();
-            break;
-        case 3:
-            UpdateUser();
-            break;
-        case 4:
-            DeleteUser();
-            break;
-        case 5:
-            printf("-------------EXITING-------------\n");
-            return 0;
-        default:
-            printf("Enter a valid operation\n");
+            case 1:
+                CreateUser();
+                break;
+            case 2:
+                ReadUsers();
+                break;
+            case 3:
+                UpdateUser();
+                break;
+            case 4:
+                DeleteUser();
+                break;
+            case 5:
+                printf("-------------EXITING-------------\n");
+                return 0;
+            default:
+                printf("Enter a valid operation\n");
         }
     }
     return 0;
