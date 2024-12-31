@@ -5,7 +5,8 @@ unsigned long long binaryExponenetiation(unsigned long long B ,unsigned long lon
     unsigned long long result = 1;
     while(N > 0)
 	{	
-		if(N & 1){
+		if(N & 1)
+        {
 			result = (result * B) % M;
 		}
 		B = B * B % M;
